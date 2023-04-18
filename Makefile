@@ -25,16 +25,16 @@ compiler_flags := -c -Wall
 assembler_flags := 
 
 # Direction to the linker script (can be empty)
-linker_script := test.ld
+linker_script := linker/linker_script.ld
 
 # User specific linker flags.
 linker_flags := 
 
 # List of header files' directories (don't use "./").
-header_dirs := inc
+header_dirs := 
 
 # List of source files' directories (don't use "./")
-source_dirs := src
+source_dirs := linker
 
 # Name of the final executable (without extension)
 executable_name := exe

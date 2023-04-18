@@ -21,7 +21,7 @@ SECTIONS {
          *(.data*) 
     } >ram
 
-    .bss 0x43000000 : ALIGN(4) {
+    .bss 0x43000000 (NOLOAD) : ALIGN(4) {
         *(.bss*)
     }
 }

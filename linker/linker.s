@@ -15,3 +15,4 @@ main:
     
 .bss
     vector: .space 4096
+    
