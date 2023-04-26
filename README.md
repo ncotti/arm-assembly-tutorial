@@ -4,7 +4,9 @@ Check the Wiki for full documentation.
 
 ## Instalation
 
-To run all the examples, download cross-compiler [arm-linux-gnueabihf](https://releases.linaro.org/components/toolchain/binaries/latest-7/arm-linux-gnueabihf/) from x86_64 processors to ARM, and add the binaries to your `PATH` variable.
+To run all the examples, download the cross-compiler [arm-linux-gnueabihf](https://releases.linaro.org/components/toolchain/binaries/latest-7/arm-linux-gnueabihf/) from x86_64 processors to ARM, and add the binaries to your `PATH` variable.
+
+You will also need to install `qemu-system-arm`.
 
 ## Usage
 

@@ -19,25 +19,28 @@ SHELL=/bin/bash
 toolchain := arm-linux-gnueabihf
 
 # User specific flags for C compiler (implicit flags: -c)
-compiler_flags := -Wall 
+compiler_flags := -Wall -g
 
 # User specific flags for Assembler
-assembler_flags := 
+assembler_flags := -g
 
 # Direction to the linker script (can be empty)
-linker_script := linker/linker_script.ld
+linker_script := linker_script.ld
 
 # User specific linker flags (implicit flags: -Map).
-linker_flags := 
+linker_flags := -g
 
 # List of header files' directories (don't use "./").
-header_dirs := 
+header_dirs := inc
 
 # List of source files' directories (don't use "./")
-source_dirs := linker
+source_dirs := src
 
 # Name of the final executable (without extension)
-executable_name := exe
+executable_name := a
+
+# Name of the gdb script (can be empty)
+gdb_script := debug.gdb
 
 #------------------------------------------------------------------------------
 # Binutils 
@@ -189,13 +192,14 @@ kill: ## Stop qemu process running on background
 	
 .PHONY: debug
 debug: run ## Debug the program (no need to "make run" first, debug with "-g")
-	echo ""
-	gdb-multiarch -q -x "debug.gdb" "${elf_file}"
+	if [ -n "${gdb_script}" ]; then
+		arg_gdb_script="-x ${gdb_script}"
+	fi
+	gdb-multiarch -q $${arg_gdb_script} "${elf_file}"
 
 #------------------------------------------------------------------------------
 # Compilation targets
 #------------------------------------------------------------------------------
-
 # Main executable linking
 ${elf_file}: ${object_files}
 	echo -n "Linking everything together... "
@@ -232,7 +236,6 @@ ${build_dir}/%${obj_ext}: %.* ${header_files} Makefile ${linker_script}
 		echo "Unrecognized file extension."
 		exit 1
 	fi
-	
 	${print_checkmark}
 
 # Print object files' headers
