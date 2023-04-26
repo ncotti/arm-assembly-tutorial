@@ -1,4 +1,5 @@
-#include "add.h"
+#include "add1.h"
+#include "add2.h"
 
 int __attribute__((section(".text")))add9(int a, short b, char c,
     int d, int e, int f, unsigned int g, unsigned char h, int i) {

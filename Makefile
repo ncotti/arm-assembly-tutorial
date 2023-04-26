@@ -25,22 +25,22 @@ compiler_flags := -Wall -g
 assembler_flags := -g
 
 # Direction to the linker script (can be empty)
-linker_script := linker_script.ld
+linker_script := abi/linker_script.ld
 
 # User specific linker flags (implicit flags: -Map).
 linker_flags := -g
 
 # List of header files' directories (don't use "./").
-header_dirs := inc
+header_dirs := abi/inc abi/inc/sub_inc
 
 # List of source files' directories (don't use "./")
-source_dirs := src
+source_dirs := abi/src abi/src/sub_src
 
 # Name of the final executable (without extension)
 executable_name := a
 
 # Name of the gdb script (can be empty)
-gdb_script := debug.gdb
+gdb_script := abi/debug.gdb
 
 #------------------------------------------------------------------------------
 # Binutils 
@@ -81,21 +81,27 @@ map_file	:= ${build_dir}/${info_dir}/memory.map
 # List all C source files as "source_dir/source_file"
 define c_source_files !=
 	for dir in ${source_dirs}; do
-		ls $${dir}/*${c_ext} 2> /dev/null
+		if ls $${dir}/*${c_ext} 2> /dev/null; then
+			ls $${dir}/*${c_ext} 2> /dev/null
+		fi
 	done
 endef
 
 # List all assembly source files as "source_dir/source_file"
 define asm_source_files !=
 	for dir in ${source_dirs}; do
-		ls $${dir}/*${asm_ext} 2> /dev/null
+		if ls $${dir}/*${asm_ext} 2> /dev/null; then
+			ls $${dir}/*${asm_ext} 2> /dev/null
+		fi
 	done
 endef
 
 # List all header files as "header_dir/header_file"
 define header_files !=
 	for dir in ${header_dirs}; do
-		ls $${dir}/*${h_ext} 2> /dev/null
+		if ls $${dir}/*${h_ext} 2> /dev/null; then
+			ls $${dir}/*${asm_ext} 2> /dev/null
+		fi
 	done
 endef
 
@@ -191,7 +197,7 @@ kill: ## Stop qemu process running on background
 	fi
 	
 .PHONY: debug
-debug: run ## Debug the program (no need to "make run" first, debug with "-g")
+debug: run ## Debug the program (no need to "make run" first, compile with "-g")
 	if [ -n "${gdb_script}" ]; then
 		arg_gdb_script="-x ${gdb_script}"
 	fi
