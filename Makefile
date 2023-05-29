@@ -30,20 +30,23 @@ linker_script := abi/linker_script.ld
 # User specific linker flags (implicit flags: -Map).
 linker_flags := -g
 
-# List of header files' directories (don't use "./").
+# List of header files' directories.
 header_dirs := abi/inc abi/inc/sub_inc
 
-# List of source files' directories (don't use "./")
+# List of source files' directories.
 source_dirs := abi/src abi/src/sub_src
 
 # Name of the final executable (without extension)
-executable_name := a
+executable_name := exe
 
 # Name of the gdb script (can be empty)
 gdb_script := abi/debug.gdb
 
+# Name of the doxygen script (can be empty)
+doxygen_file :=
+
 #------------------------------------------------------------------------------
-# Binutils 
+# Binutils
 #------------------------------------------------------------------------------
 cc 			:= ${toolchain}-gcc
 as 			:= ${toolchain}-as
@@ -60,8 +63,8 @@ h_ext 			:= .h
 asm_ext 		:= .s
 elf_ext 		:= .elf
 bin_ext 		:= .bin
-obj_header_ext 	:= .header
-dasm_ext		:= .dasm
+obj_header_ext 	:= .txt
+dasm_ext		:= .lst
 
 #------------------------------------------------------------------------------
 # Miscelaneous constants
@@ -81,7 +84,7 @@ map_file	:= ${build_dir}/${info_dir}/memory.map
 # List all C source files as "source_dir/source_file"
 define c_source_files !=
 	for dir in ${source_dirs}; do
-		if ls $${dir}/*${c_ext} 2> /dev/null; then
+		if ls $${dir}/*${c_ext} &> /dev/null; then
 			ls $${dir}/*${c_ext} 2> /dev/null
 		fi
 	done
@@ -90,7 +93,7 @@ endef
 # List all assembly source files as "source_dir/source_file"
 define asm_source_files !=
 	for dir in ${source_dirs}; do
-		if ls $${dir}/*${asm_ext} 2> /dev/null; then
+		if ls $${dir}/*${asm_ext} &> /dev/null; then
 			ls $${dir}/*${asm_ext} 2> /dev/null
 		fi
 	done
@@ -99,7 +102,10 @@ endef
 # List all header files as "header_dir/header_file"
 define header_files !=
 	for dir in ${header_dirs}; do
-		if ls $${dir}/*${h_ext} 2> /dev/null; then
+		if ls $${dir}/*${h_ext} &> /dev/null; then
+			ls $${dir}/*${h_ext} 2> /dev/null
+		fi
+		if ls $${dir}/*${asm_ext} &> /dev/null; then
 			ls $${dir}/*${asm_ext} 2> /dev/null
 		fi
 	done
@@ -149,15 +155,42 @@ help: ## Display this message.
 .PHONY: binary
 binary: ${bin_file} ## Generate binary file, without ELF headers.
 
+.PHONY: docs
+docs: ${elf_file}	## Generate doxygen documentation as HTML
+	if [ -f ${doxygen_file} ]; then
+		if ! man doxygen &>/dev/null; then
+			echo -n "Failed to create docs"
+			${print_cross}
+			echo "  Please, install \"doxygen\" to generate the documentation with:"
+			echo "    sudo apt install doxygen"
+		elif ! man dot &>/dev/null; then
+			echo -n "Failed to create docs"
+			${print_cross}
+			echo "  Please, install \"dot\" to generate the documentation with:"
+			echo "    sudo apt install graphviz"
+		else
+			doxygen ${doxygen_file}
+			echo -n "Documentation generated correctly."
+			${print_checkmark}
+			open doc/doxygen/html/index.html 1>/dev/null
+		fi
+	else
+		echo -n "Failed to create docs. Couldn't find ${doxygen_file}."
+		${print_cross}
+	fi
+
 .PHONY: headers
 headers: ${object_header_files} ## Generate symbol table and section headers for all object files.
 
-.PHONY: dasm 
+.PHONY: dasm
 dasm: ${dasm_files} ## Generate disassemble for all object files and elf file.
 
 .PHONY: clean
 clean: ## Erase contents of build directory.
 	if [ -d $${build_dir} ]; then
+		if [ -d $${build_dir}/$${info_dir} ]; then
+			rm -R $${build_dir}/$${info_dir}
+		fi
 		rm -R $${build_dir}
 		echo -n "All files successfully erased "
 		${print_checkmark}
@@ -184,10 +217,10 @@ run: ${bin_file} kill ## Execute compiled program (using QEMU)
 .PHONY: kill
 kill: ## Stop qemu process running on background
 	# Send SIGKILL to coproc qemu if running
-	if ps | grep "qemu" &>/dev/null; then
+	if ps -e | grep "qemu" &>/dev/null; then
 		echo -n "Old qemu process running on background. Killing... "
 		# Get the line where "qemu" is
-		qemu_line=$$( ps | grep "qemu" )
+		qemu_line=$$( ps -e | grep "qemu" )
 		# Get only the first numbers (PID)
 		qemu_pid=$$( echo "$${qemu_line}" | grep -P -o '^[^\d]*\d+')
 		# Remove prefixing spaces or non digits
@@ -195,7 +228,7 @@ kill: ## Stop qemu process running on background
 		kill "$${qemu_pid}"
 		${print_checkmark}
 	fi
-	
+
 .PHONY: debug
 debug: run ## Debug the program (no need to "make run" first, compile with "-g")
 	if [ -n "${gdb_script}" ]; then
@@ -217,7 +250,7 @@ ${elf_file}: ${object_files}
 	${print_checkmark}
 	echo "Executable file \"$@\" successfully created."
 
-# Compiling individual object files 
+# Compiling individual object files
 ${build_dir}/%${obj_ext}: %.* ${header_files} Makefile ${linker_script}
 	# Create compilation folders if they don't exist
 	for dir in ${source_dirs}; do
@@ -229,7 +262,7 @@ ${build_dir}/%${obj_ext}: %.* ${header_files} Makefile ${linker_script}
 	for dir in ${header_dirs}; do
 		include_headers="$${include_headers} -I $${dir}"
 	done
-	
+
 	# Actual compiling
 	if echo $< | grep "\${c_ext}" &>/dev/null; then
 		echo -n "Compiling $< --> $@... "

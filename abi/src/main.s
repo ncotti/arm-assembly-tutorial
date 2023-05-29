@@ -1,6 +1,7 @@
 .global _start
 .extern _stack_addr
 .extern add9
+.extern main
 
 .text
 _start:
@@ -17,3 +18,11 @@ _start:
     push {r4-r8}
     bl add9     // r0 = 1 + 2*2 + 3*3 + 4*4 + 5*5 + 6*6 + 7*7 + 8*8 + 9*9 = 285
     add sp, sp, #20 // Clear stack 4*5 = 20
+    b main
+
+
+.global add_from_asm
+.type add_from_asm, %function
+add_from_asm:
+    add r0, r0, r1
+    mov pc, lr
