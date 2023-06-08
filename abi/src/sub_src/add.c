@@ -8,7 +8,7 @@ int __attribute__((section(".text")))add9(int a, short b, char c,
 
 int main(void) {
     int a;
-    a = add_from_asm(3, 5);
+    a = add6_from_asm(3, 5, 7, 9, 11, 13);  // Result: r0 = 48
     a++;
     a++;
 }
