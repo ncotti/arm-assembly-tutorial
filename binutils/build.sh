@@ -41,8 +41,8 @@ while true; do
         };;
 
         4) {
-            arm-linux-gnueabihf-ld -o "build/${file_name}.elf" "build/${file_name}.o"
-            echo "File ${file_name}.elf generated."
+            arm-linux-gnueabihf-ld -o "build/${file_name}.elf" -Map build/map_file.map "build/${file_name}.o"
+            echo "Files ${file_name}.elf and map_fiile.map generated."
         };;
 
         5) {

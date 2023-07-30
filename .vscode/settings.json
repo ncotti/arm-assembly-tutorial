@@ -1,7 +1,25 @@
 {
     "cSpell.words": [
+        "ALLOC",
+        "Binutils",
+        "EABI",
+        "edata",
+        "endianness",
+        "filesz",
+        "gnueabihf",
+        "littlearm",
         "memcopy",
+        "memsz",
+        "movs",
+        "objcopy",
+        "objdump",
+        "paddr",
+        "readelf",
+        "rwxrwxr",
         "Supersection",
+        "SYMS",
+        "SYSV",
+        "vaddr",
         "VMSA"
     ]
 }
