@@ -13,7 +13,7 @@ int main (void) {
     // This will not be copied for the preprocessor
     int c = 123;
     #endif
-    
+
     add(a, b);
     return 0;
 }

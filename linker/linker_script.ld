@@ -13,12 +13,12 @@ MEMORY {
 }
 
 SECTIONS {
-    .text : AT(0x02000000) ALIGN(4) { 
-        *(.text*) 
+    .text : AT(0x02000000) ALIGN(4) {
+        *(.text*)
     } >ram
-    
+
     .data : AT(0x03000000) ALIGN(256) {
-         *(.data*) 
+         *(.data*)
     } >ram
 
     .bss 0x43000000 (NOLOAD) : ALIGN(4) {
