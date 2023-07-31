@@ -25,22 +25,22 @@ compiler_flags := -Wall -g
 assembler_flags := -g
 
 # Direction to the linker script (can be empty)
-linker_script := abi/linker_script.ld
+linker_script := linker_script.ld
 
 # User specific linker flags (implicit flags: -Map).
 linker_flags := -g
 
 # List of header files' directories.
-header_dirs := abi/inc abi/inc/sub_inc
+header_dirs := src
 
 # List of source files' directories.
-source_dirs := abi/src abi/src/sub_src
+source_dirs := src
 
 # Name of the final executable (without extension)
 executable_name := exe
 
 # Name of the gdb script (can be empty)
-gdb_script := abi/debug.gdb
+gdb_script := debug.gdb
 
 # Name of the doxygen script (can be empty)
 doxygen_file :=
@@ -49,7 +49,7 @@ doxygen_file :=
 # Binutils
 #------------------------------------------------------------------------------
 cc 			:= ${toolchain}-gcc
-as 			:= ${toolchain}-as
+as 			:= ${toolchain}-gcc
 linker 		:= ${toolchain}-ld
 objdump 	:= ${toolchain}-objdump
 objcopy 	:= ${toolchain}-objcopy
@@ -60,7 +60,7 @@ objcopy 	:= ${toolchain}-objcopy
 obj_ext 		:= .o
 c_ext 			:= .c
 h_ext 			:= .h
-asm_ext 		:= .s
+asm_ext 		:= .S
 elf_ext 		:= .elf
 bin_ext 		:= .bin
 obj_header_ext 	:= .txt
